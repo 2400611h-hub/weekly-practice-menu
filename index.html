@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>週替わり練習メニュー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: 1か月分のカードを縦（スマホ）／2列（PC）に並べる。各カード上部にテーマ、下に練習の流れ */
+:root{
+  --bg:#f5f2f0;
+  --surface:#ffffff;
+  --fg:#231c1a;
+  --muted:#7a6c67;
+  --line:#e3d9d5;
+  --track:#c2412b;
+  --track-ink:#ffffff;
+  --track-soft:#f6e1dc;
+  --lane:#2f6d5f;
+  --lane-soft:#e3efeb;
+  --font-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --font-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#181312;--surface:#231c1a;--fg:#f2ebe8;--muted:#a89994;--line:#3a2f2c;
+  --track:#e0624a;--track-ink:#1a1210;--track-soft:#3a221d;--lane:#7fc3b1;--lane-soft:#1f3530;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#181312;--surface:#231c1a;--fg:#f2ebe8;--muted:#a89994;--line:#3a2f2c;
+  --track:#e0624a;--track-ink:#1a1210;--track-soft:#3a221d;--lane:#7fc3b1;--lane-soft:#1f3530;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:16px}
+
+header h1{font-family:var(--font-display);font-weight:400;font-size:22px;margin:0;line-height:1.3}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav button{font:inherit;font-weight:700;font-size:14px;background:var(--surface);color:var(--fg);
+  border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav button:focus-visible,.today-btn:focus-visible{outline:2px solid var(--track);outline-offset:2px}
+.range{text-align:center;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.today-btn{align-self:center;font:inherit;font-size:13px;color:var(--track);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:14px}
+.week{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.week.now{border-color:var(--track);box-shadow:0 0 0 1px var(--track)}
+.wh{background:var(--track-soft);padding:12px 16px 14px;display:flex;flex-direction:column;gap:2px}
+.week.now .wh{background:var(--track);color:var(--track-ink)}
+.wlabel{font-size:13px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.wlabel .dates{font-weight:500;opacity:.75}
+.badge{font-size:11px;font-weight:700;border:1px solid currentColor;border-radius:999px;padding:0 8px}
+.theme{font-family:var(--font-display);font-weight:400;font-size:clamp(24px,7vw,30px);line-height:1.25;margin:2px 0 0;text-wrap:balance}
+
+.body{padding:6px 16px 14px;display:flex;flex-direction:column}
+.sec{display:grid;grid-template-columns:5.5em 1fr;gap:10px;padding:10px 0;border-top:1px dashed var(--line)}
+.sec:first-child{border-top:none}
+.sec h3{margin:0;font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:700;line-height:1.5;padding-top:2px}
+.sec h3 small{display:block;font-weight:500;letter-spacing:0}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;min-width:0}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+li .name{min-width:0}
+.cat{font-weight:700}
+.sub{font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
+.tag{flex-shrink:0;font-size:11px;font-weight:700;color:var(--lane);background:var(--lane-soft);border-radius:999px;padding:0 8px;white-space:nowrap}
+.finish{font-weight:700}
+.note{font-size:12px;color:var(--muted);line-height:1.7;max-width:65ch}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header><h1>週替わり練習メニュー</h1></header>
+  <div class="nav">
+    <button id="prev" type="button">← 前の月</button>
+    <div class="range" id="range"></div>
+    <button id="next" type="button">次の月 →</button>
+  </div>
+  <button class="today-btn" id="today" type="button" hidden>今月に戻る</button>
+  <div class="grid" id="grid"></div>
+  <p class="note">メニューは週（月曜はじまり）ごとに自動で決まり、誰がいつ開いても同じ内容になります。練習日は毎週火曜で、「第◯週」はその火曜が月の何回目の火曜かで数えています。テーマは前の週と重ならず、種目もできるだけ前の週と違うものを選びます。「補充」は今週のテーマ以外から選んだ種目です。</p>
+</div>
+
+<script>
+const THEMES=[
+  {name:"大股で走る",acts:["足パカ","大股鬼ごっこ","体版先生に勝つ"],
+   drills:["グーパージャンプ","大股ダッシュ","大股スキップ","バウンディング","ひざ上げ","ギャロップ"],
+   other:["ラウンジ"]},
+  {name:"足を速く動かす",acts:["脳ミングコーン取り","ペナルティコーン取り"],
+   drills:["小刻みスキップ","もも上げダッシュ","その場で小刻み","ケンケン片足ジャンプ"],other:[]},
+  {name:"腕を振って走る",acts:["相手よりもも上げ"],drills:["腕振りダッシュ"],other:[]},
+  {name:"体の使い方",acts:["猫とネズミ","いうこと一緒やること一緒","フライ返し"],
+   drills:["スタートダッシュ","倒れこみダッシュ","ダッシュ"],
+   other:["サーキット(田畑)","10勝","スクエアじゃんけん","グル鬼","変形リレー","じゃんけんリレー"]}
+];
+const STRENGTH=[
+  {name:"体幹トレーニング",items:["プランク","横プラ","手で腰支えるやつ","うつ伏せ片足片手伸ばし","片足立ち"]},
+  {name:"腹筋",items:["二人一組ノーマル","足上げkeep","右手を左膝につけるやつ"]},
+  {name:"足トレ",items:["片足立ち","スクワット","空気椅子","ジャンプスクワット"]},
+  {name:"ジャンプ",items:["スタージャンプ","両足ジャンプ","片足ケンケン","その場スキップ","ラウンジ"]}
+];
+const FINISH=["往復リレー","エンドレスリレー"];
+
+// 2026-10-26（月）を第0週とする。メニューの生成ロジックは変えない（既存の週の内容が変わらないように）
+const START=Date.UTC(2026,9,26);
+const DAY=86400000;
+const SPAN=4;
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,rng){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pick(pool,n,avoid,rng){const s=shuffle(pool,rng);
+  const fresh=s.filter(x=>!avoid.has(x.name??x)),used=s.filter(x=>avoid.has(x.name??x));
+  return fresh.concat(used).slice(0,n)}
+
+function generate(i,prev){
+  const rng=mulberry32(i*7919+20261026);
+  const avoid=new Set(prev?prev.all:[]);
+  const theme=shuffle(THEMES.filter(t=>!prev||t.name!==prev.theme),rng)[0];
+  const others=THEMES.filter(t=>t!==theme);
+  const cat=shuffle(STRENGTH.filter(c=>!prev||c.name!==prev.cat),rng)[0];
+  const strength=pick(cat.items,3,avoid,rng);
+  const tag=(arr,fill)=>arr.map(n=>({name:n,fill}));
+  let acts=tag(pick(theme.acts,2,avoid,rng),false);
+  if(acts.length<2){const pool=others.flatMap(t=>t.acts);acts=acts.concat(tag(pick(pool,2-acts.length,avoid,rng),true))}
+  let drills=tag(pick(theme.drills,4,avoid,rng),false);
+  if(drills.length<4){const pool=others.flatMap(t=>t.drills);drills=drills.concat(tag(pick(pool,4-drills.length,avoid,rng),true))}
+  const nondrill=tag(pick(others.flatMap(t=>t.other),1,avoid,rng),true);
+  const finish=pick(FINISH,1,avoid,rng)[0];
+  const all=[...strength,...acts.map(x=>x.name),...drills.map(x=>x.name),...nondrill.map(x=>x.name),finish];
+  return {theme:theme.name,cat:cat.name,strength,acts,drills,nondrill,finish,all};
+}
+const cache=[];
+function weekMenu(i){for(let k=cache.length;k<=i;k++)cache[k]=generate(k,k?cache[k-1]:null);return cache[i]}
+
+function currentIndex(){
+  const now=new Date();
+  const d=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+  const dow=(new Date(d).getUTCDay()+6)%7;
+  return Math.max(0,Math.floor((d-dow*DAY-START)/(7*DAY)));
+}
+// 練習日＝その週の火曜日。火曜日がその月の何回目かで「◯月第◯週」
+const tue=i=>START+i*7*DAY+DAY;
+function weekName(i){const d=new Date(tue(i));return `${d.getUTCMonth()+1}月第${Math.ceil(d.getUTCDate()/7)}週`}
+const md=t=>{const d=new Date(t);return `${d.getUTCMonth()+1}/${d.getUTCDate()}`};
+const monthKey=i=>{const d=new Date(tue(i));return d.getUTCFullYear()*12+d.getUTCMonth()};
+
+const thisWeek=currentIndex();
+const firstMonth=monthKey(0);
+let month=monthKey(thisWeek);
+// その月に火曜日がある週の番号一覧
+function weeksOf(mk){
+  let i=Math.max(0,Math.floor((Date.UTC(Math.floor(mk/12),mk%12,1)-START)/(7*DAY))-1);
+  const out=[];for(;monthKey(i)<=mk;i++)if(monthKey(i)===mk)out.push(i);return out;
+}
+
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function items(list){const ul=el("ul");list.forEach(it=>{const li=el("li");li.append(el("span","name",it.name??it));
+  if(it.fill)li.append(el("span","tag","補充"));ul.append(li)});return ul}
+function sec(title,note,...content){const s=el("div","sec");const h=el("h3",null,title);if(note)h.append(el("small",null,note));
+  const c=el("div");c.append(...content);s.append(h,c);return s}
+
+function card(i){
+  const m=weekMenu(i);
+  const w=el("article","week"+(i===thisWeek?" now":""));
+  const head=el("div","wh");
+  const lab=el("div","wlabel");lab.append(el("span",null,weekName(i)),el("span","dates",`${md(tue(i))}（火）`));
+  if(i===thisWeek)lab.append(el("span","badge","今週"));
+  head.append(lab,el("p","theme",m.theme));
+  const body=el("div","body");
+  body.append(
+    sec("筋トレ",null,el("div","cat",m.cat),items(m.strength)),
+    sec("アクティビティ",null,items(m.acts)),
+    sec("メイン活動",null,el("div","sub","ドリル"),items(m.drills),el("div","sub","ドリル以外"),items(m.nondrill)),
+    sec("〆",null,el("div","finish",m.finish))
+  );
+  w.append(head,body);return w;
+}
+function render(){
+  document.getElementById("grid").replaceChildren(...weeksOf(month).map(card));
+  document.getElementById("range").textContent=`${Math.floor(month/12)}年${month%12+1}月`;
+  document.getElementById("prev").disabled=month<=firstMonth;
+  document.getElementById("today").hidden=month===monthKey(thisWeek);
+}
+document.getElementById("prev").onclick=()=>{if(month>firstMonth){month--;render()}};
+document.getElementById("next").onclick=()=>{month++;render()};
+document.getElementById("today").onclick=()=>{month=monthKey(thisWeek);render()};
+render();
+</script>
+</body>
+</html>
