@@ -69,6 +69,34 @@ li .name{min-width:0}
 .sub{font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
 .tag{flex-shrink:0;font-size:11px;font-weight:700;color:var(--lane);background:var(--lane-soft);border-radius:999px;padding:0 8px;white-space:nowrap}
 .finish{font-weight:700}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tabs button{font:inherit;font-size:14px;font-weight:700;background:none;border:none;color:var(--muted);padding:8px 4px 10px;margin-right:10px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--track)}
+.tabs button:focus-visible{outline:2px solid var(--track);outline-offset:2px}
+.view{display:flex;flex-direction:column;gap:16px}
+.lead{margin:0;font-size:14px;max-width:65ch}
+.ctheme{display:flex;flex-direction:column;gap:10px}
+.ctheme h2{font-family:var(--font-display);font-weight:400;font-size:22px;margin:8px 0 0}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
+.cand{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.chead{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--track-soft);color:var(--fg)}
+.chip.off{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.chip.on{background:var(--lane-soft);color:var(--lane)}
+.cand h3{margin:0;font-size:17px;line-height:1.4}
+.cand dl{margin:0;display:grid;gap:6px}
+.cand dt{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.cand dd{margin:0;font-size:14px}
+.refs{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.refs h2{font-family:var(--font-display);font-weight:400;font-size:22px;margin:8px 0 0}
+.ref{display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--fg);text-decoration:none}
+.ref:hover{border-color:var(--track)}
+.ref:focus-visible{outline:2px solid var(--track);outline-offset:2px}
+.ref b{display:block;color:var(--track);font-size:15px}
+.ref span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.ref small{display:block;font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+details.how summary{cursor:pointer}
+details.how p{margin:4px 0 2px;font-size:13px;color:var(--muted)}
 .note{font-size:12px;color:var(--muted);line-height:1.7;max-width:65ch}
 </style>
 </head>
@@ -76,6 +104,11 @@ li .name{min-width:0}
 
 <div class="wrap">
   <header><h1>週替わり練習メニュー</h1></header>
+  <div class="tabs" role="tablist">
+    <button id="tab-menu" type="button" role="tab" aria-selected="true">メニュー</button>
+    <button id="tab-cand" type="button" role="tab" aria-selected="false">候補メニュー</button>
+  </div>
+  <div class="view" id="view-menu">
   <div class="nav">
     <button id="prev" type="button">← 前の月</button>
     <div class="range" id="range"></div>
@@ -84,6 +117,29 @@ li .name{min-width:0}
   <button class="today-btn" id="today" type="button" hidden>今月に戻る</button>
   <div class="grid" id="grid"></div>
   <p class="note">メニューは週（月曜はじまり）ごとに自動で決まり、誰がいつ開いても同じ内容になります。練習日は毎週火曜で、「第◯週」はその火曜が月の何回目の火曜かで数えています。テーマは前の週と重ならず、種目もできるだけ前の週と違うものを選びます。「補充」は今週のテーマ以外から選んだ種目です。</p>
+  </div>
+  <div class="view" id="view-cand" hidden>
+    <p class="lead">各テーマに追加する種目の候補です。6人ほどのチーム対抗か先生との対決で、児童同士の接触や大声がないものにしています。採用が決まるまでは、自動選択には入りません。</p>
+    <div id="cands"></div>
+    <section class="refs">
+      <h2>参考になるページ</h2>
+      <a class="ref" href="https://www.pref.hiroshima.lg.jp/uploaded/attachment/604426.pdf" target="_blank" rel="noopener">
+        <b>小学校体育科「走り方」指導ハンドブック</b>
+        <span>3・4年生向けの練習とゲームが学年別にまとまっている。腕組みダッシュ走（腕振りあり・なしの比較）、いろいろな姿勢からのスタート、ジグザグリレー、追っかけリレーなど、テーマに合うものが多い。</span>
+        <small>広島県教育委員会（PDF）</small>
+      </a>
+      <a class="ref" href="https://www.mext.go.jp/sports/b_menu/sports/mcatetop04/list/jsa_00003.htm" target="_blank" rel="noopener">
+        <b>小学校体育（運動領域）指導の手引</b>
+        <span>中学年の「かけっこ・リレー」「小型ハードル走」の指導資料。ミニハードルを使うメニューを考えるときに役立つ。</span>
+        <small>スポーツ庁（PDFへのリンク集）</small>
+      </a>
+      <a class="ref" href="https://www.pref.aichi.jp/uploaded/attachment/494842.pdf" target="_blank" rel="noopener">
+        <b>ジュニア陸上体験プログラムの活動報告</b>
+        <span>元五輪リレー代表による子ども向け教室の内容。姿勢と腕振り、スキップ系ドリル、ミニハードルで脚を速く動かす練習、スタート練習の流れが参考になる。</span>
+        <small>愛知県（PDF）</small>
+      </a>
+    </section>
+  </div>
 </div>
 
 <script>
@@ -106,6 +162,63 @@ const STRENGTH=[
 ];
 const FINISH=["往復リレー","エンドレスリレー"];
 
+// 追加候補。from に採用開始日（例 "2026-12-01"）を書くと、その日以降の練習から自動選択の候補に入る
+const KIND={acts:"アクティビティ",drills:"ドリル",other:"ドリル以外"};
+const CANDIDATES=[
+  {theme:"大股で走る",kind:"acts",name:"歩数バトル",from:null,
+   how:"コートの端から端（約28m）を先生が大股で走り、歩数を確かめる。6人チームで1人ずつ走り、チームの合計歩数が「先生の歩数×6」より少なければチームの勝ち。",
+   fit:"歩数を減らそうとすると、自然に一歩を大きくして走るようになる。"},
+  {theme:"大股で走る",kind:"acts",name:"川わたり（先生鬼）",from:null,
+   how:"2本のラインで「川」を作り、先生が川の中を動く。先生にタッチされないように川を大股で跳び越えて対岸へ。1往復ごとに川の幅を広げ、最後まで渡れた人数をチームで競う。先生のタッチは軽く。",
+   fit:"遠くへ跳ぼうとして、地面を強く押して大きく前に出る動きが身につく。"},
+  {theme:"大股で走る",kind:"other",name:"ミニハードル越えリレー",from:null,
+   how:"ミニハードルを広めの間隔で並べたコースを作り、6人チームのリレーで勝負する。間隔はどのチームのコースも同じにする。",
+   fit:"広い間隔のハードルをまたいでいくので、意識しなくても歩幅が伸びたまま走れる。"},
+  {theme:"大股で走る",kind:"other",name:"歩幅ゾーンリレー",from:null,
+   how:"コーンで長めのゾーンを作り、ゾーンの中は3歩以内で通過するルールのチーム対抗リレー。歩数を超えたらゾーンの手前からやり直し。",
+   fit:"決められた歩数で抜けるには、一歩を大きくする必要がある。"},
+
+  {theme:"足を速く動かす",kind:"acts",name:"信号ダッシュ",from:null,
+   how:"先生がボールを上げている間は全員その場で細かく足踏み、下ろしたら止まる、横に出したらその方向のラインまでダッシュ。合図は声を使わずボールだけ。遅れた人が少ないチームの勝ち。",
+   fit:"細かい足踏みを続けたまま、すぐに走り出せる素早い脚の回転を練習できる。"},
+  {theme:"足を速く動かす",kind:"acts",name:"ボールが落ちるまでに",from:null,
+   how:"先生がボールを高く投げ上げ、地面に落ちるまでに10m先のラインまで走り切れたら成功。チーム全員が成功したらチームに1点。距離を少しずつ伸ばす。",
+   fit:"短い時間で前に進むために、脚を速く回す必要がある。"},
+  {theme:"足を速く動かす",kind:"other",name:"ジグザグコーンリレー",from:null,
+   how:"コーンを狭い間隔でジグザグに置き、コーンの間を細かいステップで抜けてから直線をダッシュするチーム対抗リレー。",
+   fit:"狭い間隔を抜けるために、小さく速く足を動かす。"},
+
+  {theme:"腕を振って走る",kind:"acts",name:"腕振りミラー",from:null,
+   how:"先生がその場で腕振りをし、児童は先生の腕のリズムに合わせてその場で足踏みする。先生は腕振りを速くしたり遅くしたり、急に止めたりする。止まるのが遅れた人が少ないチームの勝ち。",
+   fit:"腕のリズムにつられて足も速くなるので、腕振りで脚の回転が変わることを体で感じられる。"},
+  {theme:"腕を振って走る",kind:"acts",name:"腕あり・腕なし対決",from:null,
+   how:"チームのリレーで、全員が手を腰に当てて走る回と、腕を振って走る回のタイムをストップウォッチで測って比べる。最後は腕振りありで先生チームと勝負。",
+   fit:"腕を振った方が速く走れることをタイムで実感できる。"},
+  {theme:"腕を振って走る",kind:"drills",name:"座って腕振り",from:null,
+   how:"長座で座り、肘を曲げて腕を前後に速く振る。速く振るとお尻が浮きそうになる感覚をつかんだら、立ってその場ダッシュにつなげる。",
+   fit:"脚を使わずに、腕を前後に振る勢いだけを練習できる。"},
+  {theme:"腕を振って走る",kind:"drills",name:"腕振りスキップ",from:null,
+   how:"腕を大きく前後に振りながら、高く弾むスキップで進む。",
+   fit:"腕を振り上げる勢いで体が持ち上がる感覚がわかる。"},
+  {theme:"腕を振って走る",kind:"drills",name:"腕振りからスタート",from:null,
+   how:"その場で腕振りだけを3回し、4回目の振りに合わせて走り出して10mダッシュ。",
+   fit:"腕振りのリズムから走り出すので、腕と脚を合わせて動かす練習になる。"},
+  {theme:"腕を振って走る",kind:"other",name:"腕振りチェックリレー",from:null,
+   how:"チーム対抗リレーのコースの途中に「チェックゾーン」を作り、先生が立って見る。腕を振らずに通過したらゾーンの入口からやり直し。",
+   fit:"急いでいる場面でも腕を振り続ける意識がつく。"},
+
+  {theme:"体の使い方",kind:"acts",name:"いろんな姿勢からスタート対決",from:null,
+   how:"先生が「うつぶせ」「体育座り」「後ろ向き」などの姿勢を指定し、合図で10m先のラインまで走る。先生も同じ姿勢から一緒に走り、先生より先にゴールした人数をチームで競う。",
+   fit:"どんな姿勢からでも素早く起き上がり、前に倒れ込みながら走り出す体の使い方を練習できる。"},
+  {theme:"体の使い方",kind:"other",name:"先生ガード宝取り",from:null,
+   how:"コートの真ん中にコーン（宝）を置き、先生3〜4人がその周りを守る。各チーム1人ずつ順番に、先生にタッチされないように宝を取りに行き、自陣に持ち帰ったらチームに1点。タッチされたら自陣に戻って次の人と交代。",
+   fit:"急に止まる、切り返す、また加速するなど、走りながら体の向きや重心を変える動きがたくさん入る。"}
+];
+const CAND_BY_NAME=Object.fromEntries(CANDIDATES.map(c=>[c.name,c]));
+const adopted=(c,i)=>c.from&&Date.parse(c.from)<=tue(i);
+// テーマの基本の候補に、採用済みの追加候補を足す
+const poolOf=(t,kind,i)=>t[kind].concat(CANDIDATES.filter(c=>c.theme===t.name&&c.kind===kind&&adopted(c,i)).map(c=>c.name));
+
 // 2026-10-26（月）を第0週とする。メニューの生成ロジックは変えない（既存の週の内容が変わらないように）
 const START=Date.UTC(2026,9,26);
 const DAY=86400000;
@@ -126,11 +239,11 @@ function generate(i,prev){
   const cat=shuffle(STRENGTH.filter(c=>!prev||c.name!==prev.cat),rng)[0];
   const strength=pick(cat.items,3,avoid,rng);
   const tag=(arr,fill)=>arr.map(n=>({name:n,fill}));
-  let acts=tag(pick(theme.acts,2,avoid,rng),false);
-  if(acts.length<2){const pool=others.flatMap(t=>t.acts);acts=acts.concat(tag(pick(pool,2-acts.length,avoid,rng),true))}
-  let drills=tag(pick(theme.drills,4,avoid,rng),false);
-  if(drills.length<4){const pool=others.flatMap(t=>t.drills);drills=drills.concat(tag(pick(pool,4-drills.length,avoid,rng),true))}
-  const nondrill=tag(pick(others.flatMap(t=>t.other),1,avoid,rng),true);
+  let acts=tag(pick(poolOf(theme,"acts",i),2,avoid,rng),false);
+  if(acts.length<2){const pool=others.flatMap(t=>poolOf(t,"acts",i));acts=acts.concat(tag(pick(pool,2-acts.length,avoid,rng),true))}
+  let drills=tag(pick(poolOf(theme,"drills",i),4,avoid,rng),false);
+  if(drills.length<4){const pool=others.flatMap(t=>poolOf(t,"drills",i));drills=drills.concat(tag(pick(pool,4-drills.length,avoid,rng),true))}
+  const nondrill=tag(pick(others.flatMap(t=>poolOf(t,"other",i)),1,avoid,rng),true);
   const finish=pick(FINISH,1,avoid,rng)[0];
   const all=[...strength,...acts.map(x=>x.name),...drills.map(x=>x.name),...nondrill.map(x=>x.name),finish];
   return {theme:theme.name,cat:cat.name,strength,acts,drills,nondrill,finish,all};
@@ -160,7 +273,8 @@ function weeksOf(mk){
 }
 
 function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
-function items(list){const ul=el("ul");list.forEach(it=>{const li=el("li");li.append(el("span","name",it.name??it));
+function items(list){const ul=el("ul");list.forEach(it=>{const li=el("li");const n=it.name??it,c=CAND_BY_NAME[n];
+  if(c){const d=el("details","how name");d.append(el("summary",null,n),el("p",null,c.how));li.append(d)}else li.append(el("span","name",n));
   if(it.fill)li.append(el("span","tag","補充"));ul.append(li)});return ul}
 function sec(title,note,...content){const s=el("div","sec");const h=el("h3",null,title);if(note)h.append(el("small",null,note));
   const c=el("div");c.append(...content);s.append(h,c);return s}
@@ -191,6 +305,33 @@ document.getElementById("prev").onclick=()=>{if(month>firstMonth){month--;render
 document.getElementById("next").onclick=()=>{month++;render()};
 document.getElementById("today").onclick=()=>{month=monthKey(thisWeek);render()};
 render();
+
+function renderCands(){
+  const box=document.getElementById("cands");
+  box.replaceChildren(...THEMES.map(t=>{
+    const sec=el("section","ctheme");sec.append(el("h2",null,t.name));
+    const g=el("div","cgrid");
+    CANDIDATES.filter(c=>c.theme===t.name).forEach(c=>{
+      const a=el("article","cand");const h=el("div","chead");
+      h.append(el("span","chip",KIND[c.kind]),c.from?el("span","chip on",`${md(Date.parse(c.from))}から採用`):el("span","chip off","未採用"));
+      const dl=el("dl");dl.append(el("dt",null,"やり方"),el("dd",null,c.how),el("dt",null,"テーマとの関係"),el("dd",null,c.fit));
+      a.append(h,el("h3",null,c.name),dl);g.append(a);
+    });
+    sec.append(g);return sec;
+  }));
+}
+function show(v){
+  const cand=v==="cand";
+  document.getElementById("view-menu").hidden=cand;
+  document.getElementById("view-cand").hidden=!cand;
+  document.getElementById("tab-menu").setAttribute("aria-selected",String(!cand));
+  document.getElementById("tab-cand").setAttribute("aria-selected",String(cand));
+}
+document.getElementById("tab-cand").textContent=`候補メニュー（${CANDIDATES.length}）`;
+document.getElementById("tab-menu").onclick=()=>show("menu");
+document.getElementById("tab-cand").onclick=()=>show("cand");
+renderCands();
+show(location.hash==="#candidates"?"cand":"menu");
 </script>
 </body>
 </html>
